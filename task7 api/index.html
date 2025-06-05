@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>User Info Fetcher</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    #user-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+    .user-card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 15px;
+      width: 300px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .user-card h2 {
+      font-size: 1.2em;
+      margin-bottom: 8px;
+      color: #444;
+    }
+    .user-card p {
+      margin: 5px 0;
+      font-size: 0.95em;
+    }
+    #reload-btn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    #reload-btn:hover {
+      background: #0056b3;
+    }
+    #error {
+      color: red;
+      text-align: center;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <h1>User Info from API</h1>
+  <button id="reload-btn">Reload Users</button>
+  <div id="user-container"></div>
+  <div id="error"></div>
+
+  <script>
+    const API_URL = 'https://jsonplaceholder.typicode.com/users';
+    const container = document.getElementById('user-container');
+    const errorDiv = document.getElementById('error');
+    const reloadBtn = document.getElementById('reload-btn');
+
+    async function fetchUsers() {
+      container.innerHTML = '';
+      errorDiv.textContent = '';
+
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const users = await response.json();
+        users.forEach(user => {
+          const userCard = document.createElement('div');
+          userCard.className = 'user-card';
+          userCard.innerHTML = `
+            <h2>${user.name}</h2>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Address:</strong> ${user.address.street}, ${user.address.city}</p>
+          `;
+          container.appendChild(userCard);
+        });
+      } catch (error) {
+        errorDiv.textContent = 'Failed to load users. Please check your internet connection.';
+        console.error('Fetch error:', error);
+      }
+    }
+
+    // Initial fetch
+    fetchUsers();
+
+    // Reload button functionality
+    reloadBtn.addEventListener('click', fetchUsers);
+  </script>
+</body>
+</html>
